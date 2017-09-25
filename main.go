@@ -15,6 +15,7 @@ var (
 )
 
 func handle(conn net.Conn) {
+	fmt.Println("sock5-proxy: got a client")
 	defer conn.Close()
 	reader := bufio.NewReader(conn)
 	version, _ := reader.ReadByte()
@@ -46,7 +47,7 @@ func handle(conn net.Conn) {
 	case 0x03: // domain
 		domainLength := int(remoteAddr[0])
 		host = string(remoteAddr[1 : domainLength+1])
-		fmt.Println(domainLength, remoteAddr[1:domainLength+1])
+		//fmt.Println(domainLength, remoteAddr[1:domainLength+1])
 	case 0x04: // ipv6
 		ipv6 := remoteAddr[:16]
 		host = net.IP{ipv6[0], ipv6[1], ipv6[2], ipv6[3], ipv6[4], ipv6[5], ipv6[6], ipv6[7], ipv6[8], ipv6[9], ipv6[10], ipv6[11], ipv6[12], ipv6[13], ipv6[14], ipv6[15]}.String()
