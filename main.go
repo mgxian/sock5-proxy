@@ -81,7 +81,12 @@ func handle(conn net.Conn) {
 
 	conn.Write([]byte{5, 0, 0, 1, 0, 0, 0, 0, 0, 0})
 
-	go io.Copy(server, conn)
+	go func() {
+		defer server.Close()
+		io.Copy(server, conn)
+		fmt.Println("client say bye bye")
+	}()
+
 	io.Copy(conn, server)
 }
 
@@ -100,8 +105,8 @@ func NewParameter(host, port string) (*Parameter, error) {
 }
 
 func handleParameter() (*Parameter, error) {
-	host := flag.String("h", "", "-h listen address defualt 0.0.0.0")
-	port := flag.String("p", "1025", "-p listen port default 1025")
+	host := flag.String("h", "", "listen address defualt 0.0.0.0")
+	port := flag.String("p", "1025", "listen port default 1025")
 
 	flag.Parse()
 
@@ -115,12 +120,13 @@ func getListenAddress() string {
 
 func main() {
 	listenAddress := getListenAddress()
-	fmt.Println(listenAddress)
 	listen, err := net.Listen("tcp", listenAddress)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
+
+	fmt.Println("sock5-proxy listening on", listenAddress)
 
 	defer listen.Close()
 
