@@ -106,7 +106,7 @@ func NewParameter(host, port string) (*Parameter, error) {
 
 func handleParameter() (*Parameter, error) {
 	host := flag.String("h", "", "listen address defualt 0.0.0.0")
-	port := flag.String("p", "1025", "listen port default 1025")
+	port := flag.String("p", "1025", "listen port")
 
 	flag.Parse()
 
