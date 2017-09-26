@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"fmt"
 	"io"
 	"net"
@@ -84,11 +85,41 @@ func handle(conn net.Conn) {
 	io.Copy(conn, server)
 }
 
+// Parameter 存储命令行参数的struct
+type Parameter struct {
+	host string
+	port string
+}
+
+// NewParameter 创建存储命令行参数的struct
+func NewParameter(host, port string) (*Parameter, error) {
+	return &Parameter{
+		host: host,
+		port: port,
+	}, nil
+}
+
+func handleParameter() (*Parameter, error) {
+	host := flag.String("h", "", "-h listen address defualt 0.0.0.0")
+	port := flag.String("p", "1025", "-p listen port default 1025")
+
+	flag.Parse()
+
+	return NewParameter(*host, *port)
+}
+
+func getListenAddress() string {
+	p, _ := handleParameter()
+	return p.host + ":" + p.port
+}
+
 func main() {
-	listen, err := net.Listen("tcp", ":1025")
+	listenAddress := getListenAddress()
+	fmt.Println(listenAddress)
+	listen, err := net.Listen("tcp", listenAddress)
 	if err != nil {
 		fmt.Println(err)
-		panic("listen error")
+		return
 	}
 
 	defer listen.Close()
